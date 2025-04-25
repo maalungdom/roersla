@@ -1,0 +1,44 @@
+name: CI
+
+# Kjør på push til alle greiner, og på pull_request
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  build-and-validate:
+    name: Bygg, test og valider
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Sjekk ut koden
+      - uses: actions/checkout@v4
+
+      # 2. Sett opp Go
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'  # eller din foretrukne Go-versjon
+
+      # 3. Builder og kjører testane
+      - name: Bygg og test
+        run: |
+          go mod tidy
+          go test ./... -v
+
+      # 4. Sjekk ortografi: forbudte teikn ⟨ð⟩ og ⟨þ⟩
+      - name: Sjekk ortografi for «ð»
+        run: |
+          if grep -R -nP '\b[^\s]ð[^\s]*\b(?<!Óðinn|Harðang|Niðarós)' .; then
+            echo "::error file=README.md::Ulovleg «ð» utanom tillat namn"
+            exit 1
+          fi
+
+      - name: Sjekk ortografi for «þ»
+        run: |
+          if grep -R -n 'þ' .; then
+            echo "::error file=README.md::Ulovleg «þ» — bruk «t» i staden"
+            exit 1
+          fi
