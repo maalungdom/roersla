@@ -2,7 +2,7 @@
 
 # Rørsla
 
-Utgreiing av kunstig språk.
+Utgreiing av eit kunstig mål.
 
 ## Installation
 
